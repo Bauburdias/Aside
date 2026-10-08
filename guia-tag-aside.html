@@ -1,0 +1,1610 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>A tag &lt;aside&gt; do HTML: todos os usos na prática</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@400;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --tinta: #1b2a3a;
+        --papel: #f4f6f8;
+        --linha: #d3dae1;
+        --suave: #5b6b7b;
+        --destaque: #1d5c63;
+        --marca: #ffd45e;
+        --marca-borda: #d99a00;
+        --marca-fundo: #fff4cf;
+        --codigo-bg: #13202b;
+        --codigo-tx: #e6edf3;
+        --fonte-texto: "Newsreader", Georgia, "Times New Roman", serif;
+        --fonte-ui: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+        --fonte-codigo:
+          "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas,
+          monospace;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        html {
+          scroll-behavior: smooth;
+        }
+      }
+      body {
+        margin: 0;
+        background: var(--papel);
+        color: var(--tinta);
+        font-family: var(--fonte-texto);
+        font-size: 1.125rem;
+        line-height: 1.65;
+      }
+      a {
+        color: var(--destaque);
+        text-underline-offset: 0.2em;
+      }
+      a:focus-visible,
+      summary:focus-visible,
+      input:focus-visible,
+      button:focus-visible {
+        outline: 3px solid var(--marca-borda);
+        outline-offset: 2px;
+      }
+      code {
+        font-family: var(--fonte-codigo);
+        font-size: 0.85em;
+        background: #e3e9ee;
+        padding: 0.1em 0.35em;
+        border-radius: 4px;
+      }
+
+      /* topo */
+      .topo {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 3rem 1.25rem 2.5rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+        gap: 2.5rem;
+        align-items: center;
+      }
+      .topo h1 {
+        margin: 0 0 1rem;
+        font-family: var(--fonte-ui);
+        font-size: clamp(2rem, 5vw, 3.4rem);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+      .lead {
+        margin: 0;
+        max-width: 34em;
+        font-size: 1.3rem;
+      }
+      .nota-hero {
+        padding: 1.25rem 1.5rem;
+        background: var(--marca-fundo);
+        border-left: 6px solid var(--marca-borda);
+        font-size: 1.1rem;
+      }
+      .nota-hero p {
+        margin: 0;
+      }
+
+      /* estrutura */
+      .layout {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 0 1.25rem 3rem;
+        display: grid;
+        grid-template-columns: 15rem minmax(0, 1fr);
+        gap: 2.5rem;
+        align-items: start;
+      }
+      .sumario-pagina {
+        position: sticky;
+        top: 1rem;
+        max-height: calc(100vh - 2rem);
+        overflow: auto;
+        padding-top: 0.75rem;
+        border-top: 3px solid var(--tinta);
+        font-family: var(--fonte-ui);
+        font-size: 0.95rem;
+        line-height: 1.3;
+      }
+      .sumario-pagina h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+      }
+      .sumario-pagina ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+      .sumario-pagina a {
+        display: block;
+        padding: 0.35rem 0;
+        color: var(--tinta);
+        text-decoration: none;
+      }
+      .sumario-pagina a:hover {
+        color: var(--destaque);
+        text-decoration: underline;
+      }
+
+      main {
+        min-width: 0;
+      }
+      main > section {
+        margin: 0 0 3.5rem;
+      }
+      main > section > h2 {
+        margin: 0 0 1rem;
+        font-family: var(--fonte-ui);
+        font-size: 1.75rem;
+        line-height: 1.2;
+        letter-spacing: -0.01em;
+        scroll-margin-top: 1rem;
+      }
+      main > section > p {
+        max-width: 40em;
+        margin: 0 0 1em;
+      }
+
+      /* código e resultado */
+      .painel {
+        margin-top: 1.5rem;
+      }
+      .codigo {
+        margin: 0 0 1rem;
+        overflow: hidden;
+        border-radius: 8px;
+        background: var(--codigo-bg);
+      }
+      .codigo figcaption {
+        padding: 0.45rem 1rem;
+        border-bottom: 1px solid #26384a;
+        color: #9fb1c2;
+        font-family: var(--fonte-ui);
+        font-size: 0.85rem;
+      }
+      .codigo pre {
+        margin: 0;
+        padding: 1rem;
+        overflow-x: auto;
+        color: var(--codigo-tx);
+        font-family: var(--fonte-codigo);
+        font-size: 0.85rem;
+        line-height: 1.6;
+        tab-size: 2;
+      }
+      .codigo code {
+        padding: 0;
+        background: none;
+        font-size: inherit;
+        color: inherit;
+      }
+      .t-aside {
+        color: var(--marca);
+        font-weight: 600;
+      }
+
+      .demo {
+        overflow: hidden;
+        border: 1px solid var(--linha);
+        border-radius: 8px;
+        background: #fff;
+      }
+      .demo-rotulo {
+        padding: 0.45rem 1rem;
+        border-bottom: 1px solid var(--linha);
+        background: #eef1f4;
+        color: var(--suave);
+        font-family: var(--fonte-ui);
+        font-size: 0.85rem;
+      }
+      .resultado {
+        display: flow-root;
+        padding: 1.25rem;
+        font-size: 1rem;
+        line-height: 1.55;
+      }
+      .resultado p {
+        margin: 0 0 0.75em;
+      }
+      .resultado p:last-child {
+        margin-bottom: 0;
+      }
+      .resultado h3,
+      .resultado h4 {
+        margin: 0 0 0.5rem;
+        font-family: var(--fonte-ui);
+        line-height: 1.25;
+      }
+      .resultado h3 {
+        font-size: 1.15rem;
+      }
+      .resultado h4 {
+        font-size: 1rem;
+      }
+      .resultado ul,
+      .resultado ol {
+        margin: 0;
+        padding-left: 1.25rem;
+      }
+      .resultado header,
+      .resultado section,
+      .resultado footer {
+        margin-bottom: 0.75rem;
+      }
+      .resultado footer {
+        margin-bottom: 0;
+      }
+      .resultado label {
+        display: block;
+        font-family: var(--fonte-ui);
+        font-size: 0.9rem;
+      }
+      :where(.resultado:not(.limpo)) aside {
+        margin: 0.75rem 0;
+        padding: 0.75rem 1rem;
+        background: var(--marca-fundo);
+        border-left: 4px solid var(--marca-borda);
+      }
+      :where(.resultado:not(.limpo)) aside:first-child {
+        margin-top: 0;
+      }
+
+      /* tabela */
+      .tabela-rolagem {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--fonte-ui);
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+      th,
+      td {
+        padding: 0.6rem 0.75rem;
+        border-bottom: 1px solid var(--linha);
+        text-align: left;
+        vertical-align: top;
+      }
+      th {
+        border-bottom: 2px solid var(--tinta);
+      }
+
+      .rodape {
+        max-width: 72rem;
+        margin: 0 auto;
+        padding: 0 1.25rem 3rem;
+        color: var(--suave);
+        font-size: 1rem;
+      }
+
+      @media (max-width: 60rem) {
+        .topo,
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        .sumario-pagina {
+          position: static;
+          max-height: none;
+        }
+      }
+
+      /* ===== CSS dos exemplos (o mesmo código mostrado em cada seção) ===== */
+
+      .pagina {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(8rem, 1fr);
+        gap: 1.5rem;
+      }
+      .pagina aside {
+        align-self: start;
+        padding: 1rem;
+        background: #fff4cf;
+        border-left: 4px solid #d99a00;
+      }
+      @media (max-width: 30rem) {
+        .pagina {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .curiosidade {
+        float: right;
+        width: 40%;
+        margin: 0 0 0.5rem 1rem;
+        padding: 0.75rem 1rem;
+        background: #fff4cf;
+        border-left: 4px solid #d99a00;
+        font-size: 0.95rem;
+      }
+
+      .destaque {
+        margin: 1rem 0;
+        padding: 0 1.25rem;
+        border-left: 6px solid #1d5c63;
+        font-size: 1.4rem;
+        font-style: italic;
+        line-height: 1.3;
+      }
+      .destaque blockquote {
+        margin: 0;
+      }
+
+      .caixa {
+        margin: 0 0 0.75rem;
+        padding: 0.75rem 1rem;
+        border-left: 5px solid;
+        border-radius: 0 6px 6px 0;
+      }
+      .dica {
+        background: #e3f4ea;
+        border-color: #2e8b57;
+      }
+      .aviso {
+        background: #fde8e4;
+        border-color: #c8412b;
+      }
+      .glossario {
+        background: #e8eef9;
+        border-color: #3b5bb5;
+      }
+      .glossario dl,
+      .glossario dd {
+        margin: 0;
+      }
+
+      .autor {
+        margin-top: 1.25rem;
+        padding: 1rem 1.25rem;
+        border: 1px dashed #1d5c63;
+        border-radius: 8px;
+      }
+      .autor h4 {
+        margin: 0 0 0.25rem;
+      }
+
+      .anuncio {
+        max-width: 18rem;
+        padding: 0.75rem;
+        border: 1px solid #c3ccd5;
+        background: #f4f6f8;
+        text-align: center;
+      }
+      .anuncio p {
+        margin: 0 0 0.5rem;
+        font-size: 0.75rem;
+        color: #5b6b7b;
+      }
+      .anuncio a {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+      }
+      .anuncio span {
+        display: block;
+        font-size: 0.9rem;
+      }
+
+      .lateral section + section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #d99a00;
+      }
+      .lateral input {
+        display: block;
+        width: 100%;
+        max-width: 18rem;
+        margin: 0.25rem 0 0.5rem;
+        padding: 0.4rem;
+      }
+      .lateral ul {
+        margin: 0;
+        padding-left: 1.25rem;
+      }
+
+      .sumario {
+        position: sticky;
+        top: 1rem;
+        max-width: 16rem;
+        padding: 0.75rem 1rem;
+        border: 1px solid #c3ccd5;
+        background: #fff;
+      }
+      .sumario ol {
+        margin: 0;
+        padding-left: 1.25rem;
+      }
+
+      .externo {
+        padding: 1rem;
+        background: #fff4cf;
+        border: 2px solid #d99a00;
+      }
+      .interno {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #fff;
+        border: 1px dashed #d99a00;
+      }
+
+      .caixa-visual {
+        padding: 0.75rem 1rem;
+        background: #e8eef9;
+        border-radius: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 style="text-align: center">
+      Alunos: Artur, Pablo e Pedro <br />Professor: Carlos Henrique
+    </h1>
+    <header class="topo">
+      <div>
+        <h1>Todas as formas de usar a tag &lt;aside&gt;</h1>
+        <p class="lead">
+          Um guia prático de HTML: cada exemplo traz o código, o resultado no
+          navegador e uma explicação de quando e por que usar o aside daquele
+          jeito.
+        </p>
+      </div>
+      <aside class="nota-hero" aria-label="Comentário do guia">
+        <p>
+          Eu sou um <code>&lt;aside&gt;</code>. Se você me tirar da página, o
+          texto ao lado continua completo. É isso que me define.
+        </p>
+      </aside>
+    </header>
+
+    <div class="layout">
+      <aside class="sumario-pagina" aria-labelledby="titulo-sumario-pagina">
+        <h2 id="titulo-sumario-pagina">Neste guia</h2>
+        <nav aria-label="Sumário do guia">
+          <ul>
+            <li><a href="#conceito">O que é e por que usam</a></li>
+            <li><a href="#simples">O aside mais simples</a></li>
+            <li>
+              <a href="#barra-lateral"
+                >Barra lateral ao lado do conteúdo principal</a
+              >
+            </li>
+            <li>
+              <a href="#dentro-do-article"
+                >Dentro de um article: nota lateral ou curiosidade</a
+              >
+            </li>
+            <li><a href="#citacao">Citação em destaque (pull quote)</a></li>
+            <li><a href="#caixas">Caixas de dica, aviso e glossário</a></li>
+            <li><a href="#autor">Sobre o autor</a></li>
+            <li><a href="#relacionados">Links e artigos relacionados</a></li>
+            <li>
+              <a href="#publicidade">Publicidade e conteúdo patrocinado</a>
+            </li>
+            <li>
+              <a href="#widgets">Barra lateral de blog com vários widgets</a>
+            </li>
+            <li><a href="#sumario">Sumário (índice) da página</a></li>
+            <li>
+              <a href="#secoes-rodape">Dentro de section, header e footer</a>
+            </li>
+            <li><a href="#aninhado">Aside dentro de aside</a></li>
+            <li><a href="#detalhes">Aside recolhível com details</a></li>
+            <li>
+              <a href="#acessibilidade"
+                >Dando nome ao aside: regiões e leitores de tela</a
+              >
+            </li>
+            <li><a href="#quando-nao">Quando não usar o aside</a></li>
+            <li><a href="#resumo">Resumo dos usos</a></li>
+          </ul>
+        </nav>
+      </aside>
+
+      <main>
+        <section id="conceito" aria-labelledby="h-conceito">
+          <h2 id="h-conceito">O que é e por que usam</h2>
+          <p>
+            O elemento <code>&lt;aside&gt;</code> foi introduzido no HTML5 para
+            marcar conteúdo que está “à parte”: relacionado ao assunto da
+            página, mas não essencial para entendê-lo. Antes dele, quase tudo
+            isso virava uma <code>&lt;div&gt;</code> com uma classe como
+            <code>sidebar</code> ou <code>box</code>, e só quem lia o código
+            sabia o que era cada bloco.
+          </p>
+          <p>
+            Usam o aside por quatro motivos. O primeiro é
+            <strong>semântica</strong>: o nome da tag diz o que o conteúdo é,
+            sem depender de comentários ou de nomes de classe. O segundo é
+            <strong>acessibilidade</strong>: leitores de tela transformam o
+            aside em uma região de referência, e quem navega por teclado ou por
+            voz pode pular direto para ele, ou ignorá-lo e ir ao conteúdo
+            principal.
+          </p>
+          <p>
+            O terceiro é <strong>compatibilidade com ferramentas</strong>: modos
+            de leitura e leitores de feed podem tratar o aside como secundário e
+            mostrar só o essencial. Buscadores também leem a estrutura da
+            página, mas usar aside não é um truque para subir posições; o ganho
+            é de clareza, não de ranking. O quarto é
+            <strong>manutenção</strong>: um código com
+            <code>&lt;header&gt;</code>, <code>&lt;main&gt;</code>,
+            <code>&lt;aside&gt;</code> e <code>&lt;footer&gt;</code> é muito
+            mais fácil de ler e de alterar meses depois.
+          </p>
+          <p>
+            O teste prático é simples: tire o trecho da página. Se o texto
+            principal continua completo e compreensível, o trecho é um bom
+            candidato a aside. Se ficar faltando algo importante, não é aside.
+          </p>
+          <p>
+            Sobre a sintaxe: o aside pode ficar em qualquer lugar onde caiba
+            conteúdo de fluxo e aceita quase tudo dentro dele (títulos,
+            parágrafos, listas, formulários, imagens). A única restrição é que
+            não pode ser descendente de <code>&lt;address&gt;</code>. Ele só
+            aceita atributos globais, como <code>class</code>, <code>id</code> e
+            <code>aria-*</code>. Lembre também que o aside não define layout:
+            ele não cria colunas, não flutua e não muda de cor sozinho. Isso é
+            trabalho do CSS, como os exemplos a seguir mostram.
+          </p>
+        </section>
+
+        <section class="exemplo" id="simples" aria-labelledby="h-simples">
+          <h2 id="h-simples">O aside mais simples</h2>
+          <p>
+            A tag <code>&lt;aside&gt;</code> representa uma parte da página cujo
+            conteúdo tem relação apenas indireta com o que está ao redor: algo
+            que complementa, mas que poderia ser retirado sem que o texto
+            principal perdesse o sentido. O nome vem do inglês <em>aside</em>,
+            “à parte”, como o ator que, no teatro, comenta algo só para a
+            plateia.
+          </p>
+          <p>
+            Sozinha, a tag não muda nada na aparência: o navegador a trata como
+            um bloco comum, igual a uma <code>&lt;div&gt;</code>. A diferença
+            está no significado. Ela avisa navegadores, leitores de tela e
+            outras ferramentas de que aquele trecho é secundário.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;p&gt;O Brasil é o maior produtor mundial de café.&lt;/p&gt;
+
+<span class="t-aside">&lt;aside</span>&gt;
+  &lt;p&gt;Segundo a lenda, o café foi descoberto na Etiópia.&lt;/p&gt;
+<span class="t-aside">&lt;/aside&gt;</span>
+
+&lt;p&gt;Os grãos mais cultivados são o arábica e o robusta.&lt;/p&gt;</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <p>O Brasil é o maior produtor mundial de café.</p>
+
+                <aside>
+                  <p>Segundo a lenda, o café foi descoberto na Etiópia.</p>
+                </aside>
+
+                <p>Os grãos mais cultivados são o arábica e o robusta.</p>
+              </div>
+            </div>
+          </div>
+          <p>
+            Repare que o resultado parece três parágrafos comuns. Só o código
+            revela que o segundo é uma observação à parte. Nos próximos
+            exemplos, o CSS faz essa diferença aparecer na tela.
+          </p>
+        </section>
+        <section
+          class="exemplo"
+          id="barra-lateral"
+          aria-labelledby="h-barra-lateral"
+        >
+          <h2 id="h-barra-lateral">
+            Barra lateral ao lado do conteúdo principal
+          </h2>
+          <p>
+            É o uso mais conhecido. O conteúdo principal da página fica em
+            <code>&lt;main&gt;</code> e, ao lado dele, um
+            <code>&lt;aside&gt;</code> reúne o que é complementar: links
+            relacionados, avisos, informações sobre o autor ou anúncios. Usa-se
+            assim porque quem navega com leitor de tela consegue pular direto
+            entre a região principal e a região complementar, e porque o código
+            deixa claro o que é essencial e o que é acessório.
+          </p>
+          <p>
+            Um detalhe importante: o <code>&lt;aside&gt;</code> não cria
+            colunas. Quem coloca um bloco ao lado do outro é o CSS (aqui,
+            <code>display: grid</code>). Para a barra lateral acompanhar a
+            rolagem da página, basta acrescentar <code>position: sticky</code>,
+            como esta própria página faz no sumário à esquerda.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;div class="pagina"&gt;
+  &lt;!-- numa página real, este div seria o &lt;main&gt; --&gt;
+  &lt;div class="principal"&gt;
+    &lt;h3&gt;Guia do café&lt;/h3&gt;
+    &lt;p&gt;Aqui fica o texto principal da página, que ocupa a coluna maior.&lt;/p&gt;
+  &lt;/div&gt;
+
+  <span class="t-aside">&lt;aside</span>&gt;
+    &lt;h4&gt;Leia também&lt;/h4&gt;
+    &lt;ul&gt;
+      &lt;li&gt;Como moer o grão&lt;/li&gt;
+      &lt;li&gt;Coado ou prensa francesa?&lt;/li&gt;
+    &lt;/ul&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+&lt;/div&gt;</code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.pagina {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(8rem, 1fr);
+  gap: 1.5rem;
+}
+.pagina aside {
+  align-self: start;
+  padding: 1rem;
+  background: #fff4cf;
+  border-left: 4px solid #d99a00;
+}
+@media (max-width: 30rem) {
+  .pagina { grid-template-columns: 1fr; }
+}</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <div class="pagina">
+                  <!-- numa página real, este div seria o <main> -->
+                  <div class="principal">
+                    <h3>Guia do café</h3>
+                    <p>
+                      Aqui fica o texto principal da página, que ocupa a coluna
+                      maior.
+                    </p>
+                  </div>
+
+                  <aside>
+                    <h4>Leia também</h4>
+                    <ul>
+                      <li>Como moer o grão</li>
+                      <li>Coado ou prensa francesa?</li>
+                    </ul>
+                  </aside>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          class="exemplo"
+          id="dentro-do-article"
+          aria-labelledby="h-dentro-do-article"
+        >
+          <h2 id="h-dentro-do-article">
+            Dentro de um article: nota lateral ou curiosidade
+          </h2>
+          <p>
+            O <code>&lt;aside&gt;</code> também pode ficar dentro de um
+            <code>&lt;article&gt;</code> (ou de uma
+            <code>&lt;section&gt;</code>). Nesse caso, ele não é complementar à
+            página inteira, e sim àquele texto específico. É o equivalente
+            digital dos “boxes” de jornais e revistas: uma curiosidade, um
+            contexto histórico ou uma observação do autor.
+          </p>
+          <p>
+            Usa-se assim porque o box pertence ao artigo (se o artigo for
+            copiado, compartilhado ou lido em modo leitura, a relação continua
+            clara) e porque o leitor pode ignorá-lo sem perder o fio do texto.
+            Com <code>float: right</code>, o texto principal contorna a nota,
+            como numa revista.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;article&gt;
+  &lt;h3&gt;A história do café&lt;/h3&gt;
+
+  <span class="t-aside">&lt;aside</span> class="curiosidade"&gt;
+    &lt;p&gt;&lt;strong&gt;Curiosidade:&lt;/strong&gt; segundo a lenda, um pastor etíope notou que suas cabras ficavam agitadas depois de comer os frutos do cafeeiro.&lt;/p&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+
+  &lt;p&gt;O café é originário da Etiópia e chegou ao Brasil no século XVIII, trazido para o Pará em 1727. Com o tempo, as lavouras avançaram para o sudeste do país.&lt;/p&gt;
+  &lt;p&gt;No século XIX, o café já era o principal produto de exportação brasileiro e sustentava boa parte da economia do Império.&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.curiosidade {
+  float: right;
+  width: 40%;
+  margin: 0 0 .5rem 1rem;
+  padding: .75rem 1rem;
+  background: #fff4cf;
+  border-left: 4px solid #d99a00;
+  font-size: .95rem;
+}</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <article>
+                  <h3>A história do café</h3>
+
+                  <aside class="curiosidade">
+                    <p>
+                      <strong>Curiosidade:</strong> segundo a lenda, um pastor
+                      etíope notou que suas cabras ficavam agitadas depois de
+                      comer os frutos do cafeeiro.
+                    </p>
+                  </aside>
+
+                  <p>
+                    O café é originário da Etiópia e chegou ao Brasil no século
+                    XVIII, trazido para o Pará em 1727. Com o tempo, as lavouras
+                    avançaram para o sudeste do país.
+                  </p>
+                  <p>
+                    No século XIX, o café já era o principal produto de
+                    exportação brasileiro e sustentava boa parte da economia do
+                    Império.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="citacao" aria-labelledby="h-citacao">
+          <h2 id="h-citacao">Citação em destaque (pull quote)</h2>
+          <p>
+            Revistas costumam repetir uma frase marcante do texto em letras
+            grandes para chamar a atenção do leitor. Esse recurso é conhecido
+            como <em>pull quote</em>, e a própria especificação do HTML o cita
+            como um exemplo de uso do aside: a frase não acrescenta informação
+            nova, só reforça algo que já está no artigo.
+          </p>
+          <p>
+            Como a frase aparece duas vezes, é comum esconder a repetição de
+            leitores de tela com <code>aria-hidden="true"</code>, para que a
+            pessoa não ouça a mesma coisa duas vezes. Use essa prática só quando
+            a frase é realmente uma cópia do que está no texto.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;article&gt;
+  &lt;h3&gt;Por que o café mantém a gente acordado?&lt;/h3&gt;
+  &lt;p&gt;A cafeína bloqueia os receptores da adenosina, substância que o corpo acumula ao longo do dia e que dá a sensação de sono.&lt;/p&gt;
+
+  <span class="t-aside">&lt;aside</span> class="destaque" aria-hidden="true"&gt;
+    &lt;blockquote&gt;A cafeína não cria energia nova; ela apenas impede que o cérebro perceba o cansaço.&lt;/blockquote&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+
+  &lt;p&gt;A cafeína não cria energia nova; ela apenas impede que o cérebro perceba o cansaço. Quando o efeito passa, a adenosina acumulada volta a agir.&lt;/p&gt;
+&lt;/article&gt;</code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.destaque {
+  margin: 1rem 0;
+  padding: 0 1.25rem;
+  border-left: 6px solid #1d5c63;
+  font-size: 1.4rem;
+  font-style: italic;
+  line-height: 1.3;
+}
+.destaque blockquote { margin: 0; }</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <article>
+                  <h3>Por que o café mantém a gente acordado?</h3>
+                  <p>
+                    A cafeína bloqueia os receptores da adenosina, substância
+                    que o corpo acumula ao longo do dia e que dá a sensação de
+                    sono.
+                  </p>
+
+                  <aside class="destaque" aria-hidden="true">
+                    <blockquote>
+                      A cafeína não cria energia nova; ela apenas impede que o
+                      cérebro perceba o cansaço.
+                    </blockquote>
+                  </aside>
+
+                  <p>
+                    A cafeína não cria energia nova; ela apenas impede que o
+                    cérebro perceba o cansaço. Quando o efeito passa, a
+                    adenosina acumulada volta a agir.
+                  </p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="caixas" aria-labelledby="h-caixas">
+          <h2 id="h-caixas">Caixas de dica, aviso e glossário</h2>
+          <p>
+            Dicas, avisos leves e definições de termos são notas que enriquecem
+            o texto sem fazer parte do raciocínio principal, por isso combinam
+            com <code>&lt;aside&gt;</code>. Cada caixa ganha um nome com
+            <code>aria-label</code>: quem usa leitor de tela ouve “Dica” ou
+            “Glossário” antes do conteúdo e decide se quer ler.
+          </p>
+          <p>
+            Há um cuidado: se o aviso for essencial (um risco de segurança, por
+            exemplo), ele não é “à parte”. Deixe-o no fluxo normal do texto,
+            porque ferramentas de leitura podem tratar o aside como dispensável.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> class="caixa dica" aria-label="Dica"&gt;
+  &lt;p&gt;Guarde o café em pote fechado, longe da luz e do calor.&lt;/p&gt;
+<span class="t-aside">&lt;/aside&gt;</span>
+
+<span class="t-aside">&lt;aside</span> class="caixa aviso" aria-label="Aviso"&gt;
+  &lt;p&gt;Água fervendo (100 °C) pode deixar o café amargo; o ideal é cerca de 90 a 96 °C.&lt;/p&gt;
+<span class="t-aside">&lt;/aside&gt;</span>
+
+<span class="t-aside">&lt;aside</span> class="caixa glossario" aria-label="Glossário"&gt;
+  &lt;dl&gt;
+    &lt;dt&gt;Crema&lt;/dt&gt;
+    &lt;dd&gt;Camada de espuma dourada que se forma sobre o espresso.&lt;/dd&gt;
+  &lt;/dl&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.caixa {
+  margin: 0 0 .75rem;
+  padding: .75rem 1rem;
+  border-left: 5px solid;
+  border-radius: 0 6px 6px 0;
+}
+.dica      { background: #e3f4ea; border-color: #2e8b57; }
+.aviso     { background: #fde8e4; border-color: #c8412b; }
+.glossario { background: #e8eef9; border-color: #3b5bb5; }
+.glossario dl, .glossario dd { margin: 0; }</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <aside class="caixa dica" aria-label="Dica">
+                  <p>Guarde o café em pote fechado, longe da luz e do calor.</p>
+                </aside>
+
+                <aside class="caixa aviso" aria-label="Aviso">
+                  <p>
+                    Água fervendo (100 °C) pode deixar o café amargo; o ideal é
+                    cerca de 90 a 96 °C.
+                  </p>
+                </aside>
+
+                <aside class="caixa glossario" aria-label="Glossário">
+                  <dl>
+                    <dt>Crema</dt>
+                    <dd>
+                      Camada de espuma dourada que se forma sobre o espresso.
+                    </dd>
+                  </dl>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="autor" aria-labelledby="h-autor">
+          <h2 id="h-autor">Sobre o autor</h2>
+          <p>
+            A mini biografia no começo ou no fim de um texto é sobre quem
+            escreveu, não sobre o assunto do artigo. Por isso é um conteúdo
+            complementar e um bom caso para <code>&lt;aside&gt;</code>.
+          </p>
+          <p>
+            Aqui o nome da região vem de <code>aria-labelledby</code>, que
+            aponta para o título visível do próprio bloco. A diferença para o
+            <code>aria-label</code> é que o <code>aria-label</code> cria um nome
+            invisível, enquanto o <code>aria-labelledby</code> reaproveita um
+            texto que já existe na tela. Isso evita escrever o mesmo texto duas
+            vezes.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;article&gt;
+  &lt;h3&gt;Como escolher um bom café&lt;/h3&gt;
+  &lt;p&gt;Prefira grãos com data de torra recente e moa só a quantidade que vai usar.&lt;/p&gt;
+
+  <span class="t-aside">&lt;aside</span> class="autor" aria-labelledby="titulo-autor"&gt;
+    &lt;h4 id="titulo-autor"&gt;Sobre a autora&lt;/h4&gt;
+    &lt;p&gt;Marina Souza é barista há dez anos e escreve sobre café e cultura.&lt;/p&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+&lt;/article&gt;</code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.autor {
+  margin-top: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px dashed #1d5c63;
+  border-radius: 8px;
+}
+.autor h4 { margin: 0 0 .25rem; }</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <article>
+                  <h3>Como escolher um bom café</h3>
+                  <p>
+                    Prefira grãos com data de torra recente e moa só a
+                    quantidade que vai usar.
+                  </p>
+
+                  <aside class="autor" aria-labelledby="titulo-autor">
+                    <h4 id="titulo-autor">Sobre a autora</h4>
+                    <p>
+                      Marina Souza é barista há dez anos e escreve sobre café e
+                      cultura.
+                    </p>
+                  </aside>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          class="exemplo"
+          id="relacionados"
+          aria-labelledby="h-relacionados"
+        >
+          <h2 id="h-relacionados">Links e artigos relacionados</h2>
+          <p>
+            A seção “Leia também” aponta para outros conteúdos. Eles não fazem
+            parte do artigo atual e o leitor entende o texto sem clicar neles,
+            então o lugar natural é um <code>&lt;aside&gt;</code>. Se a lista
+            funciona como navegação, vale colocar um
+            <code>&lt;nav&gt;</code> dentro do aside: assim, quem usa leitor de
+            tela encontra tanto uma região complementar quanto um menu de
+            navegação com nome próprio.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> aria-labelledby="titulo-relacionados"&gt;
+  &lt;h3 id="titulo-relacionados"&gt;Leia também&lt;/h3&gt;
+  &lt;nav aria-label="Artigos relacionados"&gt;
+    &lt;ul&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Café coado ou prensa francesa?&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Como moer o grão na medida certa&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Arábica e robusta: qual a diferença?&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/nav&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado">
+                <aside aria-labelledby="titulo-relacionados">
+                  <h3 id="titulo-relacionados">Leia também</h3>
+                  <nav aria-label="Artigos relacionados">
+                    <ul>
+                      <li><a href="#">Café coado ou prensa francesa?</a></li>
+                      <li><a href="#">Como moer o grão na medida certa</a></li>
+                      <li>
+                        <a href="#">Arábica e robusta: qual a diferença?</a>
+                      </li>
+                    </ul>
+                  </nav>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          class="exemplo"
+          id="publicidade"
+          aria-labelledby="h-publicidade"
+        >
+          <h2 id="h-publicidade">Publicidade e conteúdo patrocinado</h2>
+          <p>
+            Anúncios são o exemplo clássico de conteúdo que não faz parte do
+            texto da página, e a especificação do HTML os menciona como um dos
+            usos do <code>&lt;aside&gt;</code>. Rotular o bloco como
+            “Publicidade” ajuda o leitor a identificar o que é anúncio e permite
+            que leitores de tela o pulem rapidamente.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> class="anuncio" aria-label="Publicidade"&gt;
+  &lt;p&gt;Publicidade&lt;/p&gt;
+  &lt;a href="#"&gt;
+    &lt;strong&gt;Cafeteira em oferta&lt;/strong&gt;
+    &lt;span&gt;Leve duas e pague uma só esta semana&lt;/span&gt;
+  &lt;/a&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.anuncio {
+  max-width: 18rem;
+  padding: .75rem;
+  border: 1px solid #c3ccd5;
+  background: #f4f6f8;
+  text-align: center;
+}
+.anuncio p { margin: 0 0 .5rem; font-size: .75rem; color: #5b6b7b; }
+.anuncio a { display: block; color: inherit; text-decoration: none; }
+.anuncio span { display: block; font-size: .9rem; }</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <aside class="anuncio" aria-label="Publicidade">
+                  <p>Publicidade</p>
+                  <a href="#">
+                    <strong>Cafeteira em oferta</strong>
+                    <span>Leve duas e pague uma só esta semana</span>
+                  </a>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="widgets" aria-labelledby="h-widgets">
+          <h2 id="h-widgets">Barra lateral de blog com vários widgets</h2>
+          <p>
+            Uma barra lateral de blog costuma juntar vários blocos: busca,
+            categorias, newsletter. Há duas formas válidas de organizar: um
+            único <code>&lt;aside&gt;</code> com vários
+            <code>&lt;section&gt;</code> dentro (como abaixo) ou vários asides
+            separados. A primeira é mais simples quando os blocos formam uma
+            única barra, porque cria uma só região complementar.
+          </p>
+          <p>
+            Como o aside tem várias coisas dentro, vale dar a ele um nome claro,
+            usar um título em cada bloco e ligar cada campo de formulário ao seu
+            <code>&lt;label&gt;</code>. Evite colocar a palavra “aside” ou
+            “complementar” no nome: o leitor de tela já anuncia o tipo da
+            região.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> class="lateral" aria-label="Ferramentas do blog"&gt;
+  &lt;section&gt;
+    &lt;h3&gt;Buscar&lt;/h3&gt;
+    &lt;form action="#"&gt;
+      &lt;label for="busca"&gt;Palavra-chave&lt;/label&gt;
+      &lt;input type="search" id="busca" name="q"&gt;
+      &lt;button type="submit"&gt;Buscar&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+
+  &lt;section&gt;
+    &lt;h3&gt;Categorias&lt;/h3&gt;
+    &lt;nav aria-label="Categorias"&gt;
+      &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Preparo&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Origem&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Equipamentos&lt;/a&gt;&lt;/li&gt;
+      &lt;/ul&gt;
+    &lt;/nav&gt;
+  &lt;/section&gt;
+
+  &lt;section&gt;
+    &lt;h3&gt;Newsletter&lt;/h3&gt;
+    &lt;p&gt;Receba uma receita nova toda semana.&lt;/p&gt;
+    &lt;form action="#"&gt;
+      &lt;label for="email"&gt;E-mail&lt;/label&gt;
+      &lt;input type="email" id="email" name="email"&gt;
+      &lt;button type="submit"&gt;Assinar&lt;/button&gt;
+    &lt;/form&gt;
+  &lt;/section&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.lateral section + section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #d99a00;
+}
+.lateral input { display: block; width: 100%; max-width: 18rem; margin: .25rem 0 .5rem; padding: .4rem; }
+.lateral ul { margin: 0; padding-left: 1.25rem; }</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado">
+                <aside class="lateral" aria-label="Ferramentas do blog">
+                  <section>
+                    <h3>Buscar</h3>
+                    <form action="#">
+                      <label for="busca">Palavra-chave</label>
+                      <input type="search" id="busca" name="q" />
+                      <button type="submit">Buscar</button>
+                    </form>
+                  </section>
+
+                  <section>
+                    <h3>Categorias</h3>
+                    <nav aria-label="Categorias">
+                      <ul>
+                        <li><a href="#">Preparo</a></li>
+                        <li><a href="#">Origem</a></li>
+                        <li><a href="#">Equipamentos</a></li>
+                      </ul>
+                    </nav>
+                  </section>
+
+                  <section>
+                    <h3>Newsletter</h3>
+                    <p>Receba uma receita nova toda semana.</p>
+                    <form action="#">
+                      <label for="email">E-mail</label>
+                      <input type="email" id="email" name="email" />
+                      <button type="submit">Assinar</button>
+                    </form>
+                  </section>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="sumario" aria-labelledby="h-sumario">
+          <h2 id="h-sumario">Sumário (índice) da página</h2>
+          <p>
+            Em textos longos, um sumário com links para cada parte ajuda a
+            navegar. Ele não é o conteúdo em si, e sim uma ferramenta para
+            chegar até ele, então fica bem num <code>&lt;aside&gt;</code> com um
+            <code>&lt;nav&gt;</code> dentro. Os links usam âncoras
+            (<code>href="#id"</code>) que levam ao título com o
+            <code>id</code> correspondente.
+          </p>
+          <p>
+            Esta página usa exatamente esse padrão no sumário à esquerda. Com
+            <code>position: sticky</code>, ele acompanha a rolagem e o leitor
+            sempre sabe onde está.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> class="sumario" aria-labelledby="titulo-sumario"&gt;
+  &lt;h3 id="titulo-sumario"&gt;Neste guia&lt;/h3&gt;
+  &lt;nav aria-label="Sumário do guia"&gt;
+    &lt;ol&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Escolher os grãos&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Moer na medida&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="#"&gt;Preparar e servir&lt;/a&gt;&lt;/li&gt;
+    &lt;/ol&gt;
+  &lt;/nav&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.sumario {
+  position: sticky;
+  top: 1rem;
+  max-width: 16rem;
+  padding: .75rem 1rem;
+  border: 1px solid #c3ccd5;
+  background: #fff;
+}
+.sumario ol { margin: 0; padding-left: 1.25rem; }</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <aside class="sumario" aria-labelledby="titulo-sumario">
+                  <h3 id="titulo-sumario">Neste guia</h3>
+                  <nav aria-label="Sumário do guia">
+                    <ol>
+                      <li><a href="#">Escolher os grãos</a></li>
+                      <li><a href="#">Moer na medida</a></li>
+                      <li><a href="#">Preparar e servir</a></li>
+                    </ol>
+                  </nav>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          class="exemplo"
+          id="secoes-rodape"
+          aria-labelledby="h-secoes-rodape"
+        >
+          <h2 id="h-secoes-rodape">Dentro de section, header e footer</h2>
+          <p>
+            O <code>&lt;aside&gt;</code> pode aparecer em qualquer lugar onde
+            caiba conteúdo de fluxo. Dentro de uma <code>&lt;section&gt;</code>,
+            ele comenta aquela seção. Dentro de um <code>&lt;header&gt;</code>,
+            pode guardar informações de apoio ao título, como tempo de leitura.
+            Dentro de um <code>&lt;footer&gt;</code>, costuma reunir avisos,
+            créditos ou observações legais.
+          </p>
+          <p>
+            Em todos esses casos vale a mesma regra: o aside é complementar ao
+            bloco que o contém. Se o bloco fosse removido, o aside perderia a
+            razão de existir.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;header&gt;
+  &lt;h3&gt;Guia do café&lt;/h3&gt;
+  <span class="t-aside">&lt;aside</span>&gt;
+    &lt;p&gt;Tempo de leitura: 5 minutos&lt;/p&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+&lt;/header&gt;
+
+&lt;section&gt;
+  &lt;h4&gt;Métodos de preparo&lt;/h4&gt;
+  &lt;p&gt;Há várias formas de preparar café: coado, prensa francesa, espresso e cold brew.&lt;/p&gt;
+  <span class="t-aside">&lt;aside</span>&gt;
+    &lt;p&gt;Cold brew é o café preparado a frio, com tempo de extração longo.&lt;/p&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+&lt;/section&gt;
+
+&lt;footer&gt;
+  <span class="t-aside">&lt;aside</span>&gt;
+    &lt;p&gt;As informações deste guia têm caráter educativo.&lt;/p&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+  &lt;p&gt;© 2026 Guia do café&lt;/p&gt;
+&lt;/footer&gt;</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado">
+                <header>
+                  <h3>Guia do café</h3>
+                  <aside>
+                    <p>Tempo de leitura: 5 minutos</p>
+                  </aside>
+                </header>
+
+                <section>
+                  <h4>Métodos de preparo</h4>
+                  <p>
+                    Há várias formas de preparar café: coado, prensa francesa,
+                    espresso e cold brew.
+                  </p>
+                  <aside>
+                    <p>
+                      Cold brew é o café preparado a frio, com tempo de extração
+                      longo.
+                    </p>
+                  </aside>
+                </section>
+
+                <footer>
+                  <aside>
+                    <p>As informações deste guia têm caráter educativo.</p>
+                  </aside>
+                  <p>© 2026 Guia do café</p>
+                </footer>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="aninhado" aria-labelledby="h-aninhado">
+          <h2 id="h-aninhado">Aside dentro de aside</h2>
+          <p>
+            Um <code>&lt;aside&gt;</code> pode conter outro. É HTML válido e faz
+            sentido quando o bloco interno é complementar ao bloco externo, como
+            um anúncio dentro de uma barra lateral. Use com moderação: mais de
+            dois níveis deixam o código confuso e a navegação por regiões,
+            cansativa para quem usa leitor de tela.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> class="externo" aria-label="Mais sobre o tema"&gt;
+  &lt;h3&gt;Mais sobre o tema&lt;/h3&gt;
+  &lt;p&gt;Veja outros guias de preparo.&lt;/p&gt;
+
+  <span class="t-aside">&lt;aside</span> class="interno" aria-label="Publicidade"&gt;
+    &lt;p&gt;Publicidade: moedor de café manual.&lt;/p&gt;
+  <span class="t-aside">&lt;/aside&gt;</span>
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.externo {
+  padding: 1rem;
+  background: #fff4cf;
+  border: 2px solid #d99a00;
+}
+.interno {
+  margin-top: 1rem;
+  padding: .75rem;
+  background: #fff;
+  border: 1px dashed #d99a00;
+}</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado limpo">
+                <aside class="externo" aria-label="Mais sobre o tema">
+                  <h3>Mais sobre o tema</h3>
+                  <p>Veja outros guias de preparo.</p>
+
+                  <aside class="interno" aria-label="Publicidade">
+                    <p>Publicidade: moedor de café manual.</p>
+                  </aside>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="detalhes" aria-labelledby="h-detalhes">
+          <h2 id="h-detalhes">Aside recolhível com details</h2>
+          <p>
+            Para notas longas que só alguns leitores vão querer, combine o
+            <code>&lt;aside&gt;</code> com <code>&lt;details&gt;</code> e
+            <code>&lt;summary&gt;</code>. O conteúdo fica recolhido até a pessoa
+            abrir, sem precisar de JavaScript, e o controle funciona com mouse,
+            teclado e leitor de tela. Escreva um
+            <code>&lt;summary&gt;</code> que diga claramente o que há dentro.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code><span class="t-aside">&lt;aside</span> aria-label="Nota do editor"&gt;
+  &lt;details&gt;
+    &lt;summary&gt;Nota do editor (clique para abrir)&lt;/summary&gt;
+    &lt;p&gt;Este texto foi revisado em outubro de 2026. As temperaturas indicadas são aproximadas e podem variar conforme o método de preparo.&lt;/p&gt;
+  &lt;/details&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado">
+                <aside aria-label="Nota do editor">
+                  <details>
+                    <summary>Nota do editor (clique para abrir)</summary>
+                    <p>
+                      Este texto foi revisado em outubro de 2026. As
+                      temperaturas indicadas são aproximadas e podem variar
+                      conforme o método de preparo.
+                    </p>
+                  </details>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section
+          class="exemplo"
+          id="acessibilidade"
+          aria-labelledby="h-acessibilidade"
+        >
+          <h2 id="h-acessibilidade">
+            Dando nome ao aside: regiões e leitores de tela
+          </h2>
+          <p>
+            Leitores de tela listam as “regiões” da página (cabeçalho,
+            navegação, conteúdo principal, complementar, rodapé) e deixam o
+            usuário pular entre elas. O aside corresponde à região
+            <em>complementar</em>. Segundo as especificações, isso vale
+            automaticamente quando o aside está direto no <code>body</code> ou
+            no <code>main</code>. Dentro de um <code>article</code> ou
+            <code>section</code>, ele só é tratado como região quando tem um
+            nome (<code>aria-label</code> ou <code>aria-labelledby</code>).
+          </p>
+          <p>
+            Se a página tem vários asides, dê um nome diferente para cada um,
+            para que a pessoa saiba o que vai encontrar. Já o atributo
+            <code>role="complementary"</code> é redundante num aside, porque ele
+            já tem esse papel por padrão. Só faz sentido em marcações antigas
+            que usam <code>div</code>, e nesse caso o melhor é trocar por aside.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;!-- Redundante: o aside já é “complementary” por padrão --&gt;
+<span class="t-aside">&lt;aside</span> role="complementary"&gt;
+  &lt;p&gt;Receitas com café para o fim de semana.&lt;/p&gt;
+<span class="t-aside">&lt;/aside&gt;</span>
+
+&lt;!-- Melhor: um nome claro e único --&gt;
+<span class="t-aside">&lt;aside</span> aria-label="Receitas relacionadas"&gt;
+  &lt;p&gt;Receitas com café para o fim de semana.&lt;/p&gt;
+<span class="t-aside">&lt;/aside&gt;</span></code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado">
+                <!-- Redundante: o aside já é “complementary” por padrão -->
+                <aside role="complementary">
+                  <p>Receitas com café para o fim de semana.</p>
+                </aside>
+
+                <!-- Melhor: um nome claro e único -->
+                <aside aria-label="Receitas relacionadas">
+                  <p>Receitas com café para o fim de semana.</p>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="exemplo" id="quando-nao" aria-labelledby="h-quando-nao">
+          <h2 id="h-quando-nao">Quando não usar o aside</h2>
+          <p>
+            Nem todo bloco ao lado do texto é um aside. A pergunta certa não é
+            “onde o bloco aparece na tela?”, e sim “qual é a relação dele com o
+            conteúdo?”. Uma caixa colorida com o passo a passo principal de uma
+            receita continua sendo conteúdo principal, mesmo que você a
+            posicione na lateral.
+          </p>
+          <p>
+            Evite o aside quando o conteúdo é essencial. Avisos de segurança,
+            instruções obrigatórias e o assunto central da página precisam ficar
+            no fluxo principal. Evite também quando o objetivo é só visual: para
+            uma caixa colorida sem relação de “à parte”, use
+            <code>&lt;div&gt;</code>. E não use aside para o que já tem elemento
+            próprio: janelas modais pedem <code>&lt;dialog&gt;</code>, a seção
+            de comentários costuma ser uma <code>&lt;section&gt;</code> dentro
+            do artigo e menus pedem <code>&lt;nav&gt;</code>.
+          </p>
+          <div class="painel">
+            <figure class="codigo">
+              <figcaption>HTML</figcaption>
+              <pre><code>&lt;!-- Errado: o assunto principal está dentro de um aside --&gt;
+<span class="t-aside">&lt;aside</span>&gt;
+  &lt;h3&gt;Como preparar o café coado&lt;/h3&gt;
+  &lt;p&gt;Passo a passo completo do preparo.&lt;/p&gt;
+<span class="t-aside">&lt;/aside&gt;</span>
+
+&lt;!-- Certo: caixa só visual, sem relação de “à parte” --&gt;
+&lt;div class="caixa-visual"&gt;
+  &lt;p&gt;Uma caixa colorida que serve apenas para decorar.&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+            </figure>
+            <figure class="codigo">
+              <figcaption>CSS</figcaption>
+              <pre><code>.caixa-visual {
+  padding: .75rem 1rem;
+  background: #e8eef9;
+  border-radius: 6px;
+}</code></pre>
+            </figure>
+            <div class="demo">
+              <div class="demo-rotulo">Resultado no navegador</div>
+              <div class="resultado">
+                <!-- Errado: o assunto principal está dentro de um aside -->
+                <aside>
+                  <h3>Como preparar o café coado</h3>
+                  <p>Passo a passo completo do preparo.</p>
+                </aside>
+
+                <!-- Certo: caixa só visual, sem relação de “à parte” -->
+                <div class="caixa-visual">
+                  <p>Uma caixa colorida que serve apenas para decorar.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="resumo" aria-labelledby="h-resumo">
+          <h2 id="h-resumo">Resumo dos usos</h2>
+          <p>Uma tabela rápida para consultar depois.</p>
+          <div class="tabela-rolagem">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">Uso</th>
+                  <th scope="col">Onde fica</th>
+                  <th scope="col">Cuidado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Barra lateral do site</td>
+                  <td>Ao lado do <code>&lt;main&gt;</code></td>
+                  <td>O layout em colunas vem do CSS</td>
+                </tr>
+                <tr>
+                  <td>Nota ou curiosidade</td>
+                  <td>Dentro de <code>&lt;article&gt;</code></td>
+                  <td>Use float para o texto contornar</td>
+                </tr>
+                <tr>
+                  <td>Citação em destaque</td>
+                  <td>Dentro de <code>&lt;article&gt;</code></td>
+                  <td>Repete o texto; considere aria-hidden</td>
+                </tr>
+                <tr>
+                  <td>Dica, aviso e glossário</td>
+                  <td>No meio do texto</td>
+                  <td>Dê nome com aria-label; avisos essenciais ficam fora</td>
+                </tr>
+                <tr>
+                  <td>Sobre o autor</td>
+                  <td>Início ou fim do artigo</td>
+                  <td>Use aria-labelledby apontando para o título</td>
+                </tr>
+                <tr>
+                  <td>Leia também</td>
+                  <td>Fim do artigo ou barra lateral</td>
+                  <td>Coloque um <code>&lt;nav&gt;</code> dentro da lista</td>
+                </tr>
+                <tr>
+                  <td>Publicidade</td>
+                  <td>Barra lateral ou entre textos</td>
+                  <td>Rotule como “Publicidade”</td>
+                </tr>
+                <tr>
+                  <td>Widgets (busca, categorias, newsletter)</td>
+                  <td>Barra lateral</td>
+                  <td>Título em cada bloco e label nos campos</td>
+                </tr>
+                <tr>
+                  <td>Sumário</td>
+                  <td>Início ou lateral fixa</td>
+                  <td>
+                    <code>&lt;nav&gt;</code> com âncoras e position: sticky
+                  </td>
+                </tr>
+                <tr>
+                  <td>Dentro de section, header ou footer</td>
+                  <td>Dentro do bloco</td>
+                  <td>Sempre complementar ao bloco que o contém</td>
+                </tr>
+                <tr>
+                  <td>Aside dentro de aside</td>
+                  <td>Dentro de outro aside</td>
+                  <td>No máximo dois níveis</td>
+                </tr>
+                <tr>
+                  <td>Nota recolhível</td>
+                  <td>Com <code>&lt;details&gt;</code></td>
+                  <td>Escreva um <code>&lt;summary&gt;</code> claro</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="rodape">
+      <p>
+        Dica: abra o código-fonte desta página (Ctrl+U) e veja como o próprio
+        guia usa aside no comentário do topo e no sumário.
+      </p>
+    </footer>
+
+    <script>
+      // Evita que os links e formulários de exemplo recarreguem ou rolem a página.
+      document.querySelectorAll('.resultado a[href="#"]').forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          e.preventDefault();
+        });
+      });
+      document.querySelectorAll(".resultado form").forEach(function (f) {
+        f.addEventListener("submit", function (e) {
+          e.preventDefault();
+        });
+      });
+    </script>
+  </body>
+</html>
